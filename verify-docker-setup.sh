@@ -50,13 +50,16 @@ else
     docker --version
 fi
 
-# Check if Docker Compose is installed
-if ! command -v docker-compose &> /dev/null; then
+# Check if Docker Compose is installed (check both V1 and V2)
+if command -v docker-compose &> /dev/null; then
+    print_success "Docker Compose is installed (V1)"
+    docker-compose --version
+elif docker compose version &> /dev/null; then
+    print_success "Docker Compose is installed (V2)"
+    docker compose version
+else
     print_error "Docker Compose is not installed"
     echo "   Please install Docker Compose from: https://docs.docker.com/compose/install/"
-else
-    print_success "Docker Compose is installed"
-    docker-compose --version
 fi
 
 # Check if Docker daemon is running

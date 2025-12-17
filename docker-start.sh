@@ -3,6 +3,10 @@
 # StarLabs Tempo Bot - Docker Quick Start Script
 # This script helps you quickly set up and run the bot using Docker
 
+# Define example content patterns
+EXAMPLE_KEY_PATTERN="your_private_key_1_here"
+EXAMPLE_PROXY_PATTERN="user1:pass1@ip1:port1"
+
 echo "================================================"
 echo "  StarLabs Tempo Bot - Docker Quick Start"
 echo "================================================"
@@ -20,12 +24,20 @@ check_docker() {
 
 # Function to check if Docker Compose is installed
 check_docker_compose() {
-    if ! command -v docker-compose &> /dev/null; then
+    # Check for both docker-compose (V1) and docker compose (V2)
+    if command -v docker-compose &> /dev/null; then
+        echo "✓ Docker Compose is installed (V1)"
+        return 0
+    elif docker compose version &> /dev/null; then
+        echo "✓ Docker Compose is installed (V2)"
+        # Create alias for consistency
+        alias docker-compose='docker compose'
+        return 0
+    else
         echo "❌ Docker Compose is not installed!"
         echo "Please install Docker Compose from: https://docs.docker.com/compose/install/"
         exit 1
     fi
-    echo "✓ Docker Compose is installed"
 }
 
 # Function to setup configuration files
@@ -49,7 +61,7 @@ setup_config() {
         fi
     else
         # Check if it's just the example content
-        if grep -q "your_private_key_1_here" data/private_keys.txt; then
+        if grep -q "$EXAMPLE_KEY_PATTERN" data/private_keys.txt; then
             echo "⚠️  data/private_keys.txt contains example data"
             echo "Please edit data/private_keys.txt and add your actual private keys!"
             NEED_CONFIG=true
@@ -72,7 +84,7 @@ setup_config() {
         fi
     else
         # Check if it's just the example content
-        if grep -q "user1:pass1@ip1:port1" data/proxies.txt; then
+        if grep -q "$EXAMPLE_PROXY_PATTERN" data/proxies.txt; then
             echo "⚠️  data/proxies.txt contains example data"
             echo "Please edit data/proxies.txt and add your actual proxies!"
             NEED_CONFIG=true

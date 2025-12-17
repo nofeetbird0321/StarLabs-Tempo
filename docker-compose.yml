@@ -20,7 +20,8 @@ services:
       # Python unbuffered mode for real-time logs
       - PYTHONUNBUFFERED=1
       # Auto-select menu option (default: 1 for "Start farming")
-      # Change to 2 for "Edit config", 3 for "Database actions", etc.
+      # Note: Only option 1 is suitable for long-running containers
+      # Other options (2=Edit config, 3=Database actions, 4=Exit) will cause container to stop
       - AUTO_SELECT_OPTION=1
     # Uncomment for interactive/debugging mode (not needed for normal operation)
     # stdin_open: true
