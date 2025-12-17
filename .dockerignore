@@ -40,7 +40,3 @@ tmp/
 
 # Windows specific
 *.bat
-
-# Documentation (not needed in container)
-README.md
-LICENSE

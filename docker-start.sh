@@ -33,6 +33,8 @@ setup_config() {
     echo ""
     echo "Setting up configuration files..."
     
+    NEED_CONFIG=false
+    
     # Check if private_keys.txt exists
     if [ ! -f "data/private_keys.txt" ]; then
         if [ -f "data/private_keys.txt.example" ]; then

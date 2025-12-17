@@ -130,7 +130,7 @@ else
         print_warning "data/private_keys.txt is empty"
         echo "   Please add your wallet private keys"
     # Check if it contains example data
-    elif grep -q "your_private_key" data/private_keys.txt; then
+    elif grep -q "$EXAMPLE_KEY_PATTERN" data/private_keys.txt; then
         print_warning "data/private_keys.txt contains example data"
         echo "   Please replace with your actual private keys"
     else
@@ -151,7 +151,7 @@ else
         print_warning "data/proxies.txt is empty"
         echo "   Please add your proxy addresses"
     # Check if it contains example data
-    elif grep -q "user1:pass1" data/proxies.txt; then
+    elif grep -q "$EXAMPLE_PROXY_PATTERN" data/proxies.txt; then
         print_warning "data/proxies.txt contains example data"
         echo "   Please replace with your actual proxies"
     else

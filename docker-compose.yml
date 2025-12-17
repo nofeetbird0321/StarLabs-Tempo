@@ -19,6 +19,9 @@ services:
       - TZ=UTC
       # Python unbuffered mode for real-time logs
       - PYTHONUNBUFFERED=1
+      # Auto-select menu option (default: 1 for "Start farming")
+      # Change to 2 for "Edit config", 3 for "Database actions", etc.
+      - AUTO_SELECT_OPTION=1
     # Uncomment to run in detached mode
     # stdin_open: true
     # tty: true

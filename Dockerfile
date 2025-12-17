@@ -16,14 +16,15 @@ COPY requirements.txt .
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Copy entrypoint script first
+COPY entrypoint.sh .
+RUN chmod +x entrypoint.sh
+
 # Copy application files
 COPY . .
 
 # Create data directory if it doesn't exist
 RUN mkdir -p data logs
-
-# Make entrypoint script executable
-RUN chmod +x /app/entrypoint.sh 2>/dev/null || true
 
 # Set entrypoint
 ENTRYPOINT ["/app/entrypoint.sh"]
