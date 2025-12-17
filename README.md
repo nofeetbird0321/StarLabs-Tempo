@@ -47,6 +47,38 @@ A powerful automation tool for Tempo Network Testnet with faucet claiming and to
 
 ## 🚀 Installation
 
+### Option 1: Docker (Recommended for Auto-Execution) 🐳
+
+1. Clone the repository:
+```bash
+git clone https://github.com/0xStarLabs/StarLabs-Tempo.git
+cd StarLabs-Tempo
+```
+
+2. Prepare configuration files:
+```bash
+cp data/private_keys.txt.example data/private_keys.txt
+cp data/proxies.txt.example data/proxies.txt
+# Edit these files with your actual keys and proxies
+```
+
+3. Configure `config.yaml` with your settings
+
+4. Build and run with Docker:
+```bash
+# Quick start (recommended)
+./docker-start.sh
+
+# Or manually
+docker-compose up -d
+```
+
+📖 **Documentation:**
+- [DOCKER_DEPLOYMENT.md](DOCKER_DEPLOYMENT.md) - Detailed Docker deployment guide (English)
+- [DOCKER_DEPLOYMENT_CN.md](DOCKER_DEPLOYMENT_CN.md) - Docker 部署指南（中文）
+
+### Option 2: Manual Installation
+
 1. Clone the repository:
 ```bash
 git clone https://github.com/0xStarLabs/StarLabs-Tempo.git

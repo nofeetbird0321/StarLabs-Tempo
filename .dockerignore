@@ -1,0 +1,42 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+*.egg-info/
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs (will be mounted as volume)
+logs/
+*.log
+
+# Database (will be mounted as volume)
+data/accounts.db
+
+# Temporary files
+tmp/
+*.tmp
+*.bak
+
+# Windows specific
+*.bat
