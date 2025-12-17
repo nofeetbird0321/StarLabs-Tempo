@@ -34,6 +34,10 @@ print_success() {
     echo -e "${GREEN}✓ $1${NC}"
 }
 
+# Define example content patterns for validation
+EXAMPLE_KEY_PATTERN="your_private_key"
+EXAMPLE_PROXY_PATTERN="user1:pass1"
+
 echo "Checking Docker installation..."
 echo "--------------------------------"
 
