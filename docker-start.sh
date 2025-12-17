@@ -49,7 +49,7 @@ setup_config() {
         fi
     else
         # Check if it's just the example content
-        if grep -q "your_private_key" data/private_keys.txt; then
+        if grep -q "your_private_key_1_here" data/private_keys.txt; then
             echo "⚠️  data/private_keys.txt contains example data"
             echo "Please edit data/private_keys.txt and add your actual private keys!"
             NEED_CONFIG=true
@@ -72,7 +72,7 @@ setup_config() {
         fi
     else
         # Check if it's just the example content
-        if grep -q "user1:pass1" data/proxies.txt; then
+        if grep -q "user1:pass1@ip1:port1" data/proxies.txt; then
             echo "⚠️  data/proxies.txt contains example data"
             echo "Please edit data/proxies.txt and add your actual proxies!"
             NEED_CONFIG=true

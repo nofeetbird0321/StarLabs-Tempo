@@ -35,8 +35,8 @@ print_success() {
 }
 
 # Define example content patterns for validation
-EXAMPLE_KEY_PATTERN="your_private_key"
-EXAMPLE_PROXY_PATTERN="user1:pass1"
+EXAMPLE_KEY_PATTERN="your_private_key_1_here"
+EXAMPLE_PROXY_PATTERN="user1:pass1@ip1:port1"
 
 echo "Checking Docker installation..."
 echo "--------------------------------"

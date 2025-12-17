@@ -36,7 +36,7 @@ echo ""
 
 # Run the bot automatically (option 1 - Start farming)
 # Using echo to simulate user input selecting option 1
-# Set AUTO_START environment variable to allow customization
+# Set AUTO_SELECT_OPTION environment variable to allow customization
 AUTO_SELECT_OPTION="${AUTO_SELECT_OPTION:-1}"
 echo "$AUTO_SELECT_OPTION" | python main.py
 
