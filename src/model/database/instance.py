@@ -1,44 +1,81 @@
-import json
-from typing import Optional, List, Dict
-from sqlalchemy import create_engine, Column, Integer, String
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-from sqlalchemy.orm import sessionmaker
-from loguru import logger
+# Import required libraries / 导入所需的库
+import json  # JSON handling / JSON处理
+from typing import Optional, List, Dict  # Type hints / 类型提示
+from sqlalchemy import create_engine, Column, Integer, String  # SQLAlchemy ORM / SQLAlchemy对象关系映射
+from sqlalchemy.ext.declarative import declarative_base  # Base class for models / 模型的基类
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession  # Async database support / 异步数据库支持
+from sqlalchemy.orm import sessionmaker  # Session factory / 会话工厂
+from loguru import logger  # Logging library / 日志库
 
+# Base class for database models / 数据库模型的基类
 Base = declarative_base()
 
 
 class Wallet(Base):
+    """
+    Database model for wallet information
+    钱包信息的数据库模型
+    
+    Security Note / 安全提示:
+    - Stores private keys in database (ensure database security) / 在数据库中存储私钥（确保数据库安全）
+    - Private keys should be encrypted in production / 私钥在生产环境中应加密
+    """
     __tablename__ = "wallets"
-    id = Column(Integer, primary_key=True)
-    private_key = Column(String, unique=True)
-    proxy = Column(String, nullable=True)
-    status = Column(String)  # общий статус кошелька (pending/completed)
-    tasks = Column(String)  # JSON строка с задачами
+    id = Column(Integer, primary_key=True)  # Unique ID / 唯一ID
+    private_key = Column(String, unique=True)  # Ethereum private key (SECURITY SENSITIVE) / 以太坊私钥（安全敏感）
+    proxy = Column(String, nullable=True)  # Proxy connection string / 代理连接字符串
+    status = Column(String)  # Overall wallet status (pending/completed) / 整体钱包状态（待处理/已完成）
+    tasks = Column(String)  # JSON string with tasks / JSON字符串，包含任务
 
 
 class Database:
+    """
+    Database management class for wallet and task tracking
+    用于钱包和任务跟踪的数据库管理类
+    
+    Uses SQLite with async support via aiosqlite
+    通过aiosqlite使用支持异步的SQLite
+    
+    Security Note / 安全提示:
+    - Database file should have restricted permissions / 数据库文件应具有受限权限
+    - Contains sensitive private keys / 包含敏感的私钥
+    """
     def __init__(self):
+        """
+        Initialize database connection
+        初始化数据库连接
+        """
+        # Create async SQLite engine / 创建异步SQLite引擎
         self.engine = create_async_engine(
-            "sqlite+aiosqlite:///data/accounts.db",  # Изменен путь и название БД
-            echo=False,
+            "sqlite+aiosqlite:///data/accounts.db",  # Database path / 数据库路径
+            echo=False,  # Don't log SQL statements / 不记录SQL语句
         )
+        # Create session factory / 创建会话工厂
         self.session = sessionmaker(
             bind=self.engine, class_=AsyncSession, expire_on_commit=False
         )
 
     async def init_db(self):
-        """Инициализация базы данных"""
+        """
+        Initialize database (create tables if they don't exist)
+        初始化数据库（如果表不存在则创建）
+        """
         async with self.engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
         logger.success("Database initialized successfully")
 
     async def clear_database(self):
-        """Полная очистка базы данных"""
+        """
+        Clear entire database (drops and recreates all tables)
+        清除整个数据库（删除并重新创建所有表）
+        
+        Warning / 警告:
+        - This will delete all data / 这将删除所有数据
+        - Use with caution / 谨慎使用
+        """
         async with self.engine.begin() as conn:
-            await conn.run_sync(Base.metadata.drop_all)
-            await conn.run_sync(Base.metadata.create_all)
+            await conn.run_sync(Base.metadata.drop_all)  # Drop all tables / 删除所有表
+            await conn.run_sync(Base.metadata.create_all)  # Recreate tables / 重新创建表
         logger.success("Database cleared successfully")
 
     async def add_wallet(
