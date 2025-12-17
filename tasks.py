@@ -1,10 +1,12 @@
+# Main task list - defines which tasks will be executed / 主任务列表 - 定义将执行哪些任务
 TASKS = ["FAUCET"]
 
-FAUCET = ["faucet"]
-TOKEN_SENDER = ["token_sender"]
-ONCHAINGM_GM = ["onchaingm_gm"]
-ONCHAINGM_DEPLOY = ["onchaingm_deploy"]
-INFINITYNAME_DOMAIN = ["infinityname_domain"]
+# Individual task definitions / 单个任务定义
+FAUCET = ["faucet"]  # Claim tokens from faucet / 从水龙头领取代币
+TOKEN_SENDER = ["token_sender"]  # Send tokens to addresses / 发送代币到地址
+ONCHAINGM_GM = ["onchaingm_gm"]  # OnchainGM GM task / OnchainGM GM任务
+ONCHAINGM_DEPLOY = ["onchaingm_deploy"]  # Deploy OnchainGM contract / 部署OnchainGM合约
+INFINITYNAME_DOMAIN = ["infinityname_domain"]  # Mint InfinityName domain / 铸造InfinityName域名
 """
 EN:
 You can create your own task with the modules you need 
