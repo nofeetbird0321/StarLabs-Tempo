@@ -66,10 +66,16 @@ cp data/proxies.txt.example data/proxies.txt
 
 4. Build and run with Docker:
 ```bash
+# Quick start (recommended)
+./docker-start.sh
+
+# Or manually
 docker-compose up -d
 ```
 
-📖 **See [DOCKER_DEPLOYMENT.md](DOCKER_DEPLOYMENT.md) for detailed Docker deployment guide**
+📖 **Documentation:**
+- [DOCKER_DEPLOYMENT.md](DOCKER_DEPLOYMENT.md) - Detailed Docker deployment guide (English)
+- [DOCKER_DEPLOYMENT_CN.md](DOCKER_DEPLOYMENT_CN.md) - Docker 部署指南（中文）
 
 ### Option 2: Manual Installation
 
