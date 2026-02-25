@@ -15,11 +15,15 @@ from src.utils.logs import ProgressTracker, create_progress_tracker  # Progress 
 from src.utils.config_browser import run  # Configuration browser / 配置浏览器
 from src.utils.config import WalletInfo  # Wallet information / 钱包信息
 
-async def start():
+async def start(auto_start: bool = False, selected_option: int = None):
     """
     Main process entry point - handles menu selection and account processing
     主流程入口点 - 处理菜单选择和账户处理
-    
+
+    Args:
+        auto_start: Automatically start farming without menu / 自动开始farming无需菜单
+        selected_option: Pre-selected menu option (1-4) / 预选菜单选项(1-4)
+
     Features / 功能:
     - Version checking / 版本检查
     - Menu-based operation / 基于菜单的操作
@@ -52,20 +56,28 @@ async def start():
         logger.error(f"Failed to check version: {e}")
         logger.info("Continue with current version\n")
 
-    # Display main menu / 显示主菜单
-    print("\nAvailable options:\n")
-    print("[1] ⭐️ Start farming")  # Begin automated tasks / 开始自动化任务
-    print("[2] 🔧 Edit config")  # Modify configuration / 修改配置
-    print("[3] 💾 Database actions")  # Manage database / 管理数据库
-    print("[4] 👋 Exit")  # Close application / 关闭应用程序
-    print()
+    # Handle auto-start or direct option selection / 处理自动启动或直接选项选择
+    if auto_start:
+        choice = "1"
+        logger.info("Auto-start enabled, beginning farming...")
+    elif selected_option is not None:
+        choice = str(selected_option)
+        logger.info(f"Direct option selected: {choice}")
+    else:
+        # Display main menu / 显示主菜单
+        print("\nAvailable options:\n")
+        print("[1] ⭐️ Start farming")  # Begin automated tasks / 开始自动化任务
+        print("[2] 🔧 Edit config")  # Modify configuration / 修改配置
+        print("[3] 💾 Database actions")  # Manage database / 管理数据库
+        print("[4] 👋 Exit")  # Close application / 关闭应用程序
+        print()
 
-    # Get user input with error handling / 获取用户输入并进行错误处理
-    try:
-        choice = input("Enter option (1-4): ").strip()
-    except Exception as e:
-        logger.error(f"Input error: {e}")
-        return
+        # Get user input with error handling / 获取用户输入并进行错误处理
+        try:
+            choice = input("Enter option (1-4): ").strip()
+        except Exception as e:
+            logger.error(f"Input error: {e}")
+            return
 
     # Process menu selection / 处理菜单选择
     if choice == "4" or not choice:

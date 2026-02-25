@@ -5,6 +5,7 @@ import sys  # System-specific parameters and functions / 系统特定参数和�
 import asyncio  # Asynchronous I/O library / 异步I/O库
 import platform  # Access to underlying platform's identifying data / 访问底层平台的标识数据
 import logging  # Python's built-in logging / Python内置日志
+import argparse  # Command-line argument parsing / 命令行参数解析
 
 from process import start  # Main process flow / 主流程
 from src.utils.output import show_logo, show_dev_info  # Display utilities / 显示工具
@@ -19,15 +20,45 @@ async def main():
     """
     Main entry point of the application
     应用程序的主入口点
-    
+
     Displays logo and developer info, configures logging, then starts the bot
     显示logo和开发者信息，配置日志，然后启动机器人
     """
-    show_logo()  # Display ASCII art logo / 显示ASCII艺术logo
-    show_dev_info()  # Display developer information / 显示开发者信息
-    
+    # Parse command-line arguments / 解析命令行参数
+    parser = argparse.ArgumentParser(
+        description="StarLabs Tempo Bot - Automated Tempo Network Operations",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    parser.add_argument(
+        "--auto",
+        "--start",
+        action="store_true",
+        help="Automatically start farming (bypass menu selection)",
+    )
+    parser.add_argument(
+        "--option",
+        "-o",
+        type=int,
+        choices=[1, 2, 3, 4],
+        help="Select menu option directly (1: Start farming, 2: Edit config, 3: Database actions, 4: Exit)",
+    )
+    parser.add_argument(
+        "--no-logo",
+        action="store_true",
+        help="Skip logo and dev info display",
+    )
+
+    args = parser.parse_args()
+
+    # Display logo and info unless suppressed / 除非被抑制，否则显示logo和信息
+    if not args.no_logo:
+        show_logo()  # Display ASCII art logo / 显示ASCII艺术logo
+        show_dev_info()  # Display developer information / 显示开发者信息
+
     configuration()  # Configure logging and warnings / 配置日志和警告
-    await start()  # Start the main process / 启动主流程
+
+    # Pass command-line arguments to start function / 将命令行参数传递给start函数
+    await start(auto_start=args.auto, selected_option=args.option)  # Start the main process / 启动主流程
 
 
 # Log format with colors and timestamp / 带颜色和时间戳的日志格式
