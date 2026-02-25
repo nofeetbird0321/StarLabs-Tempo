@@ -4,6 +4,7 @@ TASKS = ["FAUCET"]
 # Individual task definitions / 单个任务定义
 FAUCET = ["faucet"]  # Claim tokens from faucet / 从水龙头领取代币
 TOKEN_SENDER = ["token_sender"]  # Send tokens to addresses / 发送代币到地址
+DEX_SWAPS = ["dex_swaps"]  # Perform DEX token swaps / 执行DEX代币交换
 ONCHAINGM_GM = ["onchaingm_gm"]  # OnchainGM GM task / OnchainGM GM任务
 ONCHAINGM_DEPLOY = ["onchaingm_deploy"]  # Deploy OnchainGM contract / 部署OnchainGM合约
 INFINITYNAME_DOMAIN = ["infinityname_domain"]  # Mint InfinityName domain / 铸造InfinityName域名

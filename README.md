@@ -34,6 +34,13 @@ A powerful automation tool for Tempo Network Testnet with faucet claiming and to
   - Configurable percentage of balance to send
   - Gas optimization and transaction tracking
 
+- **DEX Swaps** (NEW! 🎉):
+  - Utilize Tempo's built-in DEX (protocol-level AMM)
+  - Swap between AlphaUSD, BetaUSD, and ThetaUSD
+  - Smart slippage protection
+  - Automatic price quoting before swap
+  - Configurable swap amounts and frequency
+
 - **Balance Monitoring**:
   - Check all token balances
   - Detailed logging of token amounts
@@ -138,6 +145,12 @@ SETTINGS:
 TOKEN_SENDER:
   SEND_TOKENS_TO_MY_WALLETS: false  # Send to own wallets or random addresses
   PERCENT_OF_BALANCE_TO_SEND: [5, 10]  # Percent of balance to send
+  NUMBER_OF_TRANSACTIONS_TO_SEND: [1, 10]  # Number of transactions
+
+DEX_SWAPS:
+  NUMBER_OF_SWAPS_TO_PERFORM: [1, 3]  # Number of swaps per run
+  PERCENT_OF_BALANCE_TO_SWAP: [10, 30]  # Percent of balance to swap
+  SLIPPAGE_TOLERANCE: 1  # Slippage tolerance in percent
 
 RPCS:
   TEMPO: ["https://rpc.testnet.tempo.xyz"]
@@ -183,11 +196,19 @@ python main.py
   - Claims AlphaUSD, BetaUSD, ThetaUSD tokens
   - Displays balances after claiming
 
-### Token Sender  
+### Token Sender
 - **`token_sender`** - Send random tokens:
   - Randomly selects one of the available tokens
   - Sends configurable percentage of balance
   - Can send to random addresses or your own wallets
+
+### DEX Swaps (NEW! 🎉)
+- **`dex_swaps`** - Perform token swaps on Tempo DEX:
+  - Swaps between AlphaUSD, BetaUSD, and ThetaUSD
+  - Uses Tempo's built-in protocol-level DEX
+  - Automatic approval and price quoting
+  - Slippage protection
+  - Configurable number of swaps and amounts
 
 ## 📝 Task Configuration
 
@@ -195,10 +216,11 @@ Edit `tasks.py` to select which modules to run:
 
 ```python
 # Available task presets
-TASKS = ["FAUCET", "TOKEN_SENDER"]
+TASKS = ["FAUCET", "DEX_SWAPS"]
 
 FAUCET = ["faucet"]
 TOKEN_SENDER = ["token_sender"]
+DEX_SWAPS = ["dex_swaps"]
 ```
 
 ### Task Syntax
@@ -221,12 +243,16 @@ CUSTOM_TASK = [
 # Simple faucet claim
 TASKS = ["FAUCET"]
 
-# Faucet + Token sending
-TASKS = ["FAUCET", "TOKEN_SENDER"]
+# Faucet + DEX swaps
+TASKS = ["FAUCET", "DEX_SWAPS"]
 
-# Custom flow
+# Faucet + Token sending + DEX swaps
+TASKS = ["FAUCET", "TOKEN_SENDER", "DEX_SWAPS"]
+
+# Custom flow with mixed operations
 CUSTOM_FLOW = [
     "faucet",
+    "dex_swaps",
     "token_sender",
 ]
 ```

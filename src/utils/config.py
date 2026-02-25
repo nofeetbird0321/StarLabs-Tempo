@@ -54,6 +54,15 @@ class TokenSenderConfig:
     SEND_TOKENS_TO_MY_WALLETS: bool
     PERCENT_OF_BALANCE_TO_SEND: Tuple[float, float]
     NUMBER_OF_TRANSACTIONS_TO_SEND: Tuple[int, int]
+
+
+@dataclass
+class DexSwapsConfig:
+    NUMBER_OF_SWAPS_TO_PERFORM: Tuple[int, int]
+    PERCENT_OF_BALANCE_TO_SWAP: Tuple[float, float]
+    SLIPPAGE_TOLERANCE: float
+
+
 @dataclass
 class WalletsConfig:
     wallets: List[WalletInfo] = field(default_factory=list)
@@ -66,6 +75,7 @@ class Config:
     RPCS: RpcsConfig
     OTHERS: OthersConfig
     TOKEN_SENDER: TokenSenderConfig
+    DEX_SWAPS: DexSwapsConfig
     WALLETS: WalletsConfig = field(default_factory=WalletsConfig)
     lock: asyncio.Lock = field(default_factory=asyncio.Lock)
 
@@ -132,6 +142,11 @@ class Config:
                 SEND_TOKENS_TO_MY_WALLETS=data["TOKEN_SENDER"]["SEND_TOKENS_TO_MY_WALLETS"],
                 PERCENT_OF_BALANCE_TO_SEND=tuple(data["TOKEN_SENDER"]["PERCENT_OF_BALANCE_TO_SEND"]),
                 NUMBER_OF_TRANSACTIONS_TO_SEND=tuple(data["TOKEN_SENDER"]["NUMBER_OF_TRANSACTIONS_TO_SEND"]),
+            ),
+            DEX_SWAPS=DexSwapsConfig(
+                NUMBER_OF_SWAPS_TO_PERFORM=tuple(data["DEX_SWAPS"]["NUMBER_OF_SWAPS_TO_PERFORM"]),
+                PERCENT_OF_BALANCE_TO_SWAP=tuple(data["DEX_SWAPS"]["PERCENT_OF_BALANCE_TO_SWAP"]),
+                SLIPPAGE_TOLERANCE=data["DEX_SWAPS"]["SLIPPAGE_TOLERANCE"],
             ),
         )
 

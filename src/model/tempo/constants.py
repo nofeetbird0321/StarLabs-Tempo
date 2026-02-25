@@ -12,6 +12,12 @@ TEMPO_TOKENS = [
     {"symbol": "ThetaUSD", "address": "0x20c0000000000000000000000000000000000003", "decimals": 6},
 ]
 
+# Tempo DEX (Built-in AMM) Precompile Address
+DEX_CONTRACT_ADDRESS = "0xDEc0000000000000000000000000000000000000"
+
+# PathUSD (Quote Token) Address
+PATHUSD_ADDRESS = "0x20C0000000000000000000000000000000000000"
+
 
 class TempoProtocol(Protocol):
     """Protocol class for Tempo type hints to avoid circular imports"""
@@ -41,6 +47,66 @@ ERC20_TRANSFER_ABI = [
         "inputs": [{"name": "_owner", "type": "address"}],
         "name": "balanceOf",
         "outputs": [{"name": "balance", "type": "uint256"}],
+        "type": "function",
+    },
+    {
+        "constant": False,
+        "inputs": [
+            {"name": "_spender", "type": "address"},
+            {"name": "_value", "type": "uint256"},
+        ],
+        "name": "approve",
+        "outputs": [{"name": "", "type": "bool"}],
+        "type": "function",
+    },
+]
+
+# DEX ABI for swapping tokens
+DEX_SWAP_ABI = [
+    {
+        "inputs": [
+            {"name": "tokenIn", "type": "address"},
+            {"name": "tokenOut", "type": "address"},
+            {"name": "amountIn", "type": "uint128"},
+            {"name": "minAmountOut", "type": "uint128"},
+        ],
+        "name": "swapExactAmountIn",
+        "outputs": [{"name": "amountOut", "type": "uint128"}],
+        "stateMutability": "nonpayable",
+        "type": "function",
+    },
+    {
+        "inputs": [
+            {"name": "tokenIn", "type": "address"},
+            {"name": "tokenOut", "type": "address"},
+            {"name": "amountOut", "type": "uint128"},
+            {"name": "maxAmountIn", "type": "uint128"},
+        ],
+        "name": "swapExactAmountOut",
+        "outputs": [{"name": "amountIn", "type": "uint128"}],
+        "stateMutability": "nonpayable",
+        "type": "function",
+    },
+    {
+        "inputs": [
+            {"name": "tokenIn", "type": "address"},
+            {"name": "tokenOut", "type": "address"},
+            {"name": "amountIn", "type": "uint128"},
+        ],
+        "name": "quoteSwapExactAmountIn",
+        "outputs": [{"name": "amountOut", "type": "uint128"}],
+        "stateMutability": "view",
+        "type": "function",
+    },
+    {
+        "inputs": [
+            {"name": "tokenIn", "type": "address"},
+            {"name": "tokenOut", "type": "address"},
+            {"name": "amountOut", "type": "uint128"},
+        ],
+        "name": "quoteSwapExactAmountOut",
+        "outputs": [{"name": "amountIn", "type": "uint128"}],
+        "stateMutability": "view",
         "type": "function",
     },
 ]
