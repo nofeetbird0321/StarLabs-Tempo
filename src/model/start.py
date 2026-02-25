@@ -278,6 +278,10 @@ class Start:
         if task == "token_sender":
             return await self.tempo_instance.send_random_token()
 
+        # DEX swap task - swap tokens / DEX交换任务 - 交换代币
+        if task == "dex_swaps":
+            return await self.tempo_instance.perform_random_swaps()
+
         # OnchainGM GM task / OnchainGM GM任务
         if task == "onchaingm_gm":
             return await onchaingm_gm(self.account_index, self.session, self.tempo_web3, self.config, self.wallet)

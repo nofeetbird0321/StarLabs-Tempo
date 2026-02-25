@@ -9,7 +9,7 @@ from eth_account import Account  # Ethereum account management / 以太坊账户
 from loguru import logger  # Logging library / 日志库
 
 from src.model.onchain.web3_custom import Web3Custom  # Custom Web3 wrapper / 自定义Web3包装器
-from src.model.tempo.constants import TEMPO_TOKENS, ERC20_TRANSFER_ABI  # Token constants / 代币常量
+from src.model.tempo.constants import TEMPO_TOKENS, ERC20_TRANSFER_ABI, DEX_CONTRACT_ADDRESS, DEX_SWAP_ABI  # Token constants / 代币常量
 from src.utils.config import Config  # Configuration / 配置
 from src.utils.constants import EXPLORER_URL_TEMPO, CHAIN_ID  # Chain constants / 链常量
 from src.utils.decorators import retry_async  # Retry decorator / 重试装饰器
@@ -317,3 +317,177 @@ class Tempo:
             logger.error(f"{self.account_index} | [{tx_num}/{total_txs}] Send token error: {e}")
             await asyncio.sleep(random_pause)
             raise
+
+    async def perform_random_swaps(self) -> bool:
+        """
+        Perform random token swaps using Tempo DEX
+        使用Tempo DEX执行随机代币交换
+
+        Returns / 返回:
+            bool: True if all swaps successful / 所有交换成功则为True
+        """
+        # Determine number of swaps to perform / 确定要执行的交换数量
+        num_swaps = random.randint(
+            self.config.DEX_SWAPS.NUMBER_OF_SWAPS_TO_PERFORM[0],
+            self.config.DEX_SWAPS.NUMBER_OF_SWAPS_TO_PERFORM[1],
+        )
+        logger.info(f"{self.account_index} | Will perform {num_swaps} DEX swaps")
+
+        # Perform each swap / 执行每次交换
+        for swap_num in range(1, num_swaps + 1):
+            success = await self._perform_single_swap(swap_num, num_swaps)
+            if not success:
+                return False
+
+            # Pause between swaps (except after last one) / 交换之间暂停（最后一次除外）
+            if swap_num < num_swaps:
+                pause = random.randint(
+                    self.config.SETTINGS.RANDOM_PAUSE_BETWEEN_ACTIONS[0],
+                    self.config.SETTINGS.RANDOM_PAUSE_BETWEEN_ACTIONS[1],
+                )
+                logger.info(f"{self.account_index} | Pausing {pause}s before next swap")
+                await asyncio.sleep(pause)
+
+        return True
+
+    @retry_async(default_value=False)
+    async def _perform_single_swap(self, swap_num: int, total_swaps: int) -> bool:
+        """
+        Perform a single DEX swap transaction
+        执行单个DEX交换交易
+
+        Args / 参数:
+            swap_num: Current swap number / 当前交换编号
+            total_swaps: Total number of swaps to perform / 要执行的总交换数
+
+        Returns / 返回:
+            bool: True if successful / 成功则为True
+        """
+        try:
+            # Select two different random tokens for swap / 选择两个不同的随机代币进行交换
+            token_in = random.choice(TEMPO_TOKENS)
+            available_tokens = [t for t in TEMPO_TOKENS if t["symbol"] != token_in["symbol"]]
+            token_out = random.choice(available_tokens)
+
+            logger.info(f"{self.account_index} | [{swap_num}/{total_swaps}] Swapping {token_in['symbol']} → {token_out['symbol']}")
+
+            # Get current token balance / 获取当前代币余额
+            balance = await self.web3.get_token_balance(
+                wallet_address=self.wallet.address,
+                token_address=token_in["address"],
+                decimals=token_in["decimals"],
+                symbol=token_in["symbol"],
+            )
+
+            # Check if we have balance to swap / 检查是否有余额可交换
+            if not balance or balance.wei == 0:
+                logger.warning(f"{self.account_index} | No {token_in['symbol']} balance to swap")
+                return False
+
+            # Calculate amount to swap (random percentage of balance) / 计算要交换的金额（余额的随机百分比）
+            swap_percent = random.uniform(
+                self.config.DEX_SWAPS.PERCENT_OF_BALANCE_TO_SWAP[0] / 100,
+                self.config.DEX_SWAPS.PERCENT_OF_BALANCE_TO_SWAP[1] / 100,
+            )
+            token_unit = 10 ** token_in["decimals"]
+            amount_to_swap = int(balance.wei * swap_percent)
+            # Round down to token unit / 向下舍入到代币单位
+            amount_to_swap = (amount_to_swap // token_unit) * token_unit
+
+            # Verify amount is not too small / 验证金额不会太小
+            if amount_to_swap == 0:
+                logger.warning(f"{self.account_index} | Amount to swap is too small")
+                return False
+
+            # Format for display / 格式化以供显示
+            formatted_amount = amount_to_swap / token_unit
+            logger.info(f"{self.account_index} | [{swap_num}/{total_swaps}] Swapping {formatted_amount} {token_in['symbol']}")
+
+            # Create ERC20 contract for approval / 创建ERC20合约以进行批准
+            token_contract = self.web3.web3.eth.contract(
+                address=self.web3.web3.to_checksum_address(token_in["address"]),
+                abi=ERC20_TRANSFER_ABI
+            )
+
+            # Step 1: Approve DEX to spend tokens / 步骤1：批准DEX花费代币
+            logger.info(f"{self.account_index} | [{swap_num}/{total_swaps}] Approving DEX to spend {token_in['symbol']}")
+
+            approve_tx = await token_contract.functions.approve(
+                self.web3.web3.to_checksum_address(DEX_CONTRACT_ADDRESS),
+                amount_to_swap
+            ).build_transaction({
+                'chainId': CHAIN_ID,
+                'from': self.wallet.address,
+                'nonce': await self.web3.web3.eth.get_transaction_count(self.wallet.address),
+                'gasPrice': await self.web3.web3.eth.gas_price,
+            })
+            approve_tx['gas'] = await self.web3.web3.eth.estimate_gas(approve_tx)
+
+            signed_approve = self.web3.web3.eth.account.sign_transaction(approve_tx, self.wallet.key)
+            approve_hash = await self.web3.web3.eth.send_raw_transaction(signed_approve.raw_transaction)
+            approve_rcpt = await self.web3.web3.eth.wait_for_transaction_receipt(approve_hash, poll_latency=2)
+
+            if approve_rcpt['status'] != 1:
+                raise Exception('Approve transaction failed')
+
+            logger.success(f"{self.account_index} | [{swap_num}/{total_swaps}] Approved successfully")
+
+            # Step 2: Get quote for swap / 步骤2：获取交换报价
+            dex_contract = self.web3.web3.eth.contract(
+                address=self.web3.web3.to_checksum_address(DEX_CONTRACT_ADDRESS),
+                abi=DEX_SWAP_ABI
+            )
+
+            # Quote the swap to get expected output / 报价交换以获取预期输出
+            expected_out = await dex_contract.functions.quoteSwapExactAmountIn(
+                self.web3.web3.to_checksum_address(token_in["address"]),
+                self.web3.web3.to_checksum_address(token_out["address"]),
+                amount_to_swap
+            ).call()
+
+            # Apply slippage tolerance / 应用滑点容忍度
+            slippage = self.config.DEX_SWAPS.SLIPPAGE_TOLERANCE / 100
+            min_amount_out = int(expected_out * (1 - slippage))
+
+            expected_formatted = expected_out / (10 ** token_out["decimals"])
+            min_formatted = min_amount_out / (10 ** token_out["decimals"])
+            logger.info(f"{self.account_index} | [{swap_num}/{total_swaps}] Expected output: {expected_formatted:.6f} {token_out['symbol']}, min: {min_formatted:.6f}")
+
+            # Step 3: Execute the swap / 步骤3：执行交换
+            swap_tx = await dex_contract.functions.swapExactAmountIn(
+                self.web3.web3.to_checksum_address(token_in["address"]),
+                self.web3.web3.to_checksum_address(token_out["address"]),
+                amount_to_swap,
+                min_amount_out
+            ).build_transaction({
+                'chainId': CHAIN_ID,
+                'from': self.wallet.address,
+                'nonce': await self.web3.web3.eth.get_transaction_count(self.wallet.address),
+                'gasPrice': await self.web3.web3.eth.gas_price,
+            })
+            swap_tx['gas'] = await self.web3.web3.eth.estimate_gas(swap_tx)
+
+            signed_swap = self.web3.web3.eth.account.sign_transaction(swap_tx, self.wallet.key)
+            swap_hash = await self.web3.web3.eth.send_raw_transaction(signed_swap.raw_transaction)
+
+            # Wait for transaction receipt / 等待交易收据
+            swap_rcpt = await self.web3.web3.eth.wait_for_transaction_receipt(swap_hash, poll_latency=2)
+
+            # Check transaction status / 检查交易状态
+            if swap_rcpt['status'] != 1:
+                raise Exception('Swap transaction failed')
+
+            # Log successful swap / 记录成功的交换
+            logger.success(f"{self.account_index} | [{swap_num}/{total_swaps}] Swap completed! TX: {EXPLORER_URL_TEMPO}{swap_rcpt['transactionHash'].hex()}")
+            return True
+
+        except Exception as e:
+            # Random pause before retry / 重试前的随机暂停
+            random_pause = random.randint(
+                self.config.SETTINGS.PAUSE_BETWEEN_ATTEMPTS[0],
+                self.config.SETTINGS.PAUSE_BETWEEN_ATTEMPTS[1],
+            )
+            logger.error(f"{self.account_index} | [{swap_num}/{total_swaps}] Swap error: {e}")
+            await asyncio.sleep(random_pause)
+            raise
+
