@@ -45,6 +45,61 @@ A powerful automation tool for Tempo Network Testnet with faucet claiming and to
   - Check all token balances
   - Detailed logging of token amounts
 
+## 🚀 Quick Start (Simplified!)
+
+### The Easiest Way - One Script Does Everything! 🎯
+
+**Linux/Mac:**
+```bash
+git clone https://github.com/0xStarLabs/StarLabs-Tempo.git
+cd StarLabs-Tempo
+./start.sh --auto
+```
+
+**Windows:**
+```cmd
+git clone https://github.com/0xStarLabs/StarLabs-Tempo.git
+cd StarLabs-Tempo
+start.bat --auto
+```
+
+That's it! The script will:
+- ✅ Check Python installation
+- ✅ Create virtual environment automatically
+- ✅ Install all dependencies
+- ✅ Set up configuration files from examples
+- ✅ Guide you through first-time setup
+- ✅ Start the bot automatically
+
+### Command-Line Options
+
+**Start script with options:**
+```bash
+# Auto-start farming (skip menu)
+./start.sh --auto
+
+# Open config editor directly
+./start.sh --option 2
+
+# Interactive mode (default)
+./start.sh
+
+# Show help
+./start.sh --help
+```
+
+**Direct Python execution with options:**
+```bash
+# Auto-start farming
+python main.py --auto
+
+# Select specific option
+python main.py --option 1
+
+# Show all options
+python main.py --help
+```
+
 ## 📋 Requirements
 
 - Python 3.11.x
@@ -54,7 +109,33 @@ A powerful automation tool for Tempo Network Testnet with faucet claiming and to
 
 ## 🚀 Installation
 
-### Option 1: Docker (Recommended for Auto-Execution) 🐳
+### Option 1: Quick Start Script (Recommended) ⚡
+
+The start script handles everything automatically:
+
+**Linux/Mac:**
+```bash
+git clone https://github.com/0xStarLabs/StarLabs-Tempo.git
+cd StarLabs-Tempo
+chmod +x start.sh
+./start.sh
+```
+
+**Windows:**
+```cmd
+git clone https://github.com/0xStarLabs/StarLabs-Tempo.git
+cd StarLabs-Tempo
+start.bat
+```
+
+The script will guide you through:
+1. Automatically creating virtual environment
+2. Installing dependencies
+3. Setting up configuration files
+4. Prompting for your private keys and proxies
+5. Starting the bot
+
+### Option 2: Docker (For Auto-Execution) 🐳
 
 1. Clone the repository:
 ```bash
@@ -84,7 +165,7 @@ docker-compose up -d
 - [DOCKER_DEPLOYMENT.md](DOCKER_DEPLOYMENT.md) - Detailed Docker deployment guide (English)
 - [DOCKER_DEPLOYMENT_CN.md](DOCKER_DEPLOYMENT_CN.md) - Docker 部署指南（中文）
 
-### Option 2: Manual Installation
+### Option 3: Manual Installation
 
 1. Clone the repository:
 ```bash
@@ -169,6 +250,31 @@ SETTINGS:
 ```
 
 ## 🎮 Usage
+
+### Quick Start Commands
+
+**Start farming immediately:**
+```bash
+./start.sh --auto          # Linux/Mac
+start.bat --auto           # Windows
+python main.py --auto      # Direct Python
+```
+
+**Interactive mode (shows menu):**
+```bash
+./start.sh                 # Linux/Mac
+start.bat                  # Windows
+python main.py             # Direct Python
+```
+
+**Direct menu selection:**
+```bash
+# Skip to config editor
+./start.sh --option 2
+
+# Skip to database actions
+./start.sh --option 3
+```
 
 ### Run the Bot
 ```bash
