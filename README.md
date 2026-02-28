@@ -389,10 +389,21 @@ CUSTOM_FLOW = [
 
 ## 🔗 Network Info
 
-- **Network**: Tempo Testnet
+### Testnet (Default Configuration)
+- **Network**: Tempo Testnet (Moderato)
 - **Chain ID**: 42429
 - **RPC**: `https://rpc.testnet.tempo.xyz`
 - **Explorer**: `https://explore.tempo.xyz`
+- **Status**: Active
+
+### Mainnet (Production)
+- **Network**: Tempo Mainnet
+- **Chain ID**: 42431
+- **RPC**: `https://rpc.tempo.xyz`
+- **Explorer**: `https://explore.tempo.xyz`
+- **Status**: Live since Jan 16, 2026
+
+> **Note**: This bot is currently configured for **testnet** usage. For mainnet deployment, update the RPC URL in `config.yaml`.
 
 ## 📜 License
 MIT License

@@ -87,6 +87,9 @@ DEX_SWAPS:
 
 
 RPCS:
+    # Tempo Network RPC Endpoints
+    # Testnet (Moderato): Chain ID 42429 (default)
+    # Mainnet: Chain ID 42431 - Use ["https://rpc.tempo.xyz"] for production
     TEMPO: ["https://rpc.testnet.tempo.xyz"]
 
 
