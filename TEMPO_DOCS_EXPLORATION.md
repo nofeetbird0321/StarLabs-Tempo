@@ -1,12 +1,78 @@
 # Tempo Documentation Exploration Report
 
-**Date:** 2026-02-25
+**Date:** 2026-02-28 (Updated)
+**Previous Update:** 2026-02-25
 **Documentation Source:** https://docs.tempo.xyz/
 **Repository:** StarLabs-Tempo
 
 ## Executive Summary
 
 This document summarizes the exploration of Tempo Network's official documentation and the implementation of new features discovered. The main achievement is the implementation of DEX swap functionality using Tempo's built-in protocol-level AMM.
+
+**Latest Update (2026-02-28):** Added critical mainnet launch information, network upgrades (Bach T1), and new protocol features including expiring nonces, updated gas parameters, and state creation cost adjustments.
+
+---
+
+## 🚨 2026 Network Upgrades & Breaking Changes
+
+### Mainnet Launch & Major Updates
+
+**Tempo Mainnet Launched:** January 16, 2026 (v1.0.0)
+
+#### Recent Version History:
+1. **v1.2.0** (Feb 13, 2026, Mainnet)
+   - 🔧 Fixed critical validation bug blocking transactions with gas limits >16.7M
+   - ✅ Enables large smart contract deployments
+   - ⚠️ **Required update for all mainnet node operators**
+
+2. **v1.1.1** (Feb 12, 2026, Mainnet - "Bach" Network Upgrade T1)
+   - **TIP-1000:** State Creation Cost Increase (12.5x higher)
+     - New account creation: ~300,000 gas (was ~70,000)
+     - Smart contract deployment: proportionally more expensive
+     - **Purpose:** Prevent spam/state bloat attacks
+
+   - **TIP-1009:** Expiring Nonces
+     - Transactions now have "validBefore" timestamps
+     - Enables parallel/gasless transactions
+     - Simplifies relayer design
+     - Time-bounded replay protection
+
+   - **TIP-1010:** Updated Gas Parameters
+     - Block gas limit: **500M** (very high throughput)
+     - Max per-tx gas: **30M** (was ~16.7M)
+     - Base fee: **20 gwei** (doubled for spam resistance)
+     - Target: Keep transfers around $0.001 cost at scale
+
+3. **v1.1.0** (Feb 5, 2026, Testnet)
+   - Preview of Bach (T1) features on testnet
+
+4. **v1.0.0** (Jan 16, 2026)
+   - Official mainnet genesis
+
+### Network Information Updates
+
+#### Mainnet (Production)
+- **Network Name:** Tempo Mainnet
+- **Chain ID:** 42431
+- **RPC URL:** `https://rpc.tempo.xyz`
+- **Explorer:** `https://explore.tempo.xyz`
+- **Status:** Live since Jan 16, 2026
+
+#### Testnet (Development)
+- **Network Name:** Moderato Testnet (replaced Andantino as of Mar 8, 2025)
+- **Chain ID:** 42429
+- **RPC URL:** `https://rpc.testnet.tempo.xyz`
+- **Explorer:** `https://explore.tempo.xyz`
+- **Faucet:** Available via official channels
+
+### Impact on This Repository
+
+⚠️ **Action Items:**
+1. ✅ Current implementation uses testnet (Chain ID 42429) - No immediate changes needed
+2. 📝 Consider adding mainnet support as configuration option
+3. 🔍 Monitor gas costs with new TIP-1010 parameters
+4. 🔄 Expiring nonces (TIP-1009) could enable future optimizations for parallel transactions
+5. 💰 State creation costs (TIP-1000) affect contract deployment - minimal impact on current operations
 
 ---
 
@@ -81,10 +147,27 @@ Available in:
 - Rust
 
 ### 8. **Network Information**
-- **Network:** Tempo Testnet (Moderato)
-- **Chain ID:** 42429 (Testnet), 42431 (Moderato)
-- **RPC URL:** `https://rpc.testnet.tempo.xyz`
-- **Explorer:** `https://explore.tempo.xyz`
+- **Mainnet:**
+  - Chain ID: 42431
+  - RPC: `https://rpc.tempo.xyz`
+  - Status: Live since Jan 16, 2026
+- **Testnet (Moderato):**
+  - Chain ID: 42429
+  - RPC: `https://rpc.testnet.tempo.xyz`
+  - Status: Active (replaced Andantino Mar 8, 2025)
+- **Explorer:** `https://explore.tempo.xyz` (both networks)
+
+### 9. **Node Operations & Monitoring** 🆕
+
+**Unified Telemetry (v1.1.0+):**
+- Single `--telemetry-url` flag for all metrics and logs
+- Simplified monitoring and observability
+- Better validator performance tracking
+
+**Optimized Engine:**
+- Robust network snapshot downloads
+- Resumable sync for easier node recovery
+- Improved handling of large validator sets
 
 ---
 
@@ -157,7 +240,27 @@ DEX_SWAPS:
 
 ## 🚀 Future Enhancement Opportunities
 
-### 1. Account Abstraction Features (HIGH PRIORITY)
+### 1. Expiring Nonces (TIP-1009) Integration (NEW - HIGH PRIORITY) 🆕
+
+**Status:** Available since v1.1.1 (Feb 2026)
+
+**Feature:**
+- Use time-bounded transactions with "validBefore" timestamps
+- Enable parallel transaction execution
+- Simplify gasless transactions and relayer implementation
+- Better replay protection
+
+**Benefits:**
+- Execute multiple transactions simultaneously from same account
+- Improved transaction throughput
+- Better UX for batch operations
+- Reduced transaction failures due to nonce conflicts
+
+**Implementation Estimate:** 2-3 days
+**Complexity:** Medium-High
+**Priority:** HIGH (Protocol-level feature now live)
+
+### 2. Account Abstraction Features (HIGH PRIORITY)
 
 **Call Batching:**
 - Execute multiple operations atomically
@@ -278,19 +381,31 @@ DEX_SWAPS:
 
 ### Official Documentation
 - Main Docs: https://docs.tempo.xyz/
+- Network Upgrades: https://docs.tempo.xyz/guide/node/network-upgrades 🆕
+- Changelog: https://docs.tempo.xyz/changelog 🆕
 - DEX Guide: https://docs.tempo.xyz/guide/stablecoin-exchange/executing-swaps
 - Protocol Specs: https://docs.tempo.xyz/protocol/exchange/executing-swaps
 - Integration Guide: https://docs.tempo.xyz/quickstart/integrate-tempo
+
+### Tempo Improvement Proposals (TIPs) 🆕
+- **TIP-1000:** State Creation Cost Adjustment (Feb 2026)
+- **TIP-1009:** Expiring Nonces (Feb 2026)
+- **TIP-1010:** Mainnet Gas Parameters Update (Feb 2026)
+- **TIP-20:** Enhanced Token Standard for Payments
+- **TIP-403:** Policy Registry for KYC/AML Compliance
 
 ### Community Resources
 - Chainstack DEX Tutorial: https://docs.chainstack.com/docs/tempo-tutorial-dex-swap-foundry
 - Tempo Remix Swap Demo: https://github.com/GitGuideHub/tempo-remix-swap
 - Tempo TypeScript SDK: https://github.com/tempoxyz/tempo-ts
+- Official Blog: https://tempo.xyz/blog 🆕
 
 ### Network Information
 - Explorer: https://explore.tempo.xyz
-- RPC Endpoint: https://rpc.testnet.tempo.xyz
-- Chain ID: 42429 (Testnet)
+- Mainnet RPC: https://rpc.tempo.xyz 🆕
+- Testnet RPC: https://rpc.testnet.tempo.xyz
+- Mainnet Chain ID: 42431 🆕
+- Testnet Chain ID: 42429
 
 ---
 
@@ -340,20 +455,39 @@ DEX_SWAPS:
 The exploration of Tempo documentation has been highly successful, resulting in:
 
 1. **Immediate Value:** DEX swap functionality fully implemented and ready to use
-2. **Future Roadmap:** Clear path for additional features (Account Abstraction, Stablecoin Gas)
+2. **Future Roadmap:** Clear path for additional features (Expiring Nonces, Account Abstraction, Stablecoin Gas)
 3. **Better Understanding:** Comprehensive knowledge of Tempo's unique features
 4. **Competitive Advantage:** Early adoption of Tempo's protocol-level features
+5. **Mainnet Awareness:** Understanding of production network launch and capabilities 🆕
 
-The implementation demonstrates that Tempo Network offers significant advantages for payment-focused applications, and this bot now leverages those capabilities effectively.
+### Recent Discoveries (2026-02-28 Update) 🆕
+
+**Critical Updates:**
+- ✅ Tempo mainnet launched January 16, 2026
+- ✅ Major protocol upgrades through "Bach" (T1) network upgrade
+- ✅ New gas parameters and security hardening implemented
+- ✅ Expiring nonces feature now available for parallel transactions
+- ✅ Higher gas limits enable larger smart contract deployments
+
+**Implementation Opportunities:**
+1. **Expiring Nonces (TIP-1009)** - High priority for parallel transaction execution
+2. **Mainnet Support** - Add configuration option for production deployments
+3. **Gas Optimization** - Leverage new 500M block gas limit and 30M per-tx limit
+4. **Advanced Batching** - Combine with account abstraction for atomic operations
+
+The implementation demonstrates that Tempo Network offers significant advantages for payment-focused applications, and this bot now leverages those capabilities effectively. With mainnet live and new protocol features available, there are enhanced opportunities for production deployment and advanced automation.
 
 ### Next Steps
-1. Test the DEX swap feature thoroughly
-2. Gather user feedback
-3. Plan implementation of account abstraction features
-4. Continue monitoring Tempo documentation for updates
+1. Test the DEX swap feature thoroughly on current testnet
+2. Consider implementing expiring nonces for parallel operations
+3. Evaluate mainnet deployment for production use cases
+4. Monitor gas costs with new TIP-1010 parameters
+5. Plan implementation of account abstraction features
+6. Continue monitoring Tempo documentation for updates
 
 ---
 
-**Document Version:** 1.0
-**Last Updated:** 2026-02-25
+**Document Version:** 2.0 🆕
+**Last Updated:** 2026-02-28 🆕
+**Previous Version:** 1.0 (2026-02-25)
 **Author:** Claude (StarLabs Tempo Bot Development)
